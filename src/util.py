@@ -8,8 +8,9 @@ class JsonSerializable:
         return cls(**json_data)
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True)
+        #return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+        #return json.dumps(self.__dict__, sort_keys=True)
+        return self.__dict__
 
 
 class Hasher:
@@ -26,4 +27,4 @@ class Hasher:
         """
         Calculates the hash of a given string.
         """
-        return hashlib.sha256(data).hexdigest()
+        return hashlib.sha256(data.encode()).hexdigest()

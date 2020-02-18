@@ -1,7 +1,7 @@
-from util import Hasher
+from src.util import Hasher
 
 class MerkleNode:
-    def __init__(self, left, right, hash: str):
+    def __init__(self, left, right, hash: str = None):
         self.left = left
         self.right = right
         if hash is None and left is not None and right is not None:
@@ -20,7 +20,7 @@ class ZeroMerkleTree:
 
     @staticmethod
     def construct(items: list):
-        layer = [MerkleNode(hash = Hasher.object_hash(x)) for x in items]
+        layer = [MerkleNode(None, None, Hasher.object_hash(x)) for x in items]
         while len(layer) > 1:
             up_layer = []
             for i in range(0, len(layer) - 1, 2):
