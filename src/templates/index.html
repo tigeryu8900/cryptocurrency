@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="/src/static/favicon.ico">
+</head>
+<body>
+<div style="display: flow">
+    <legend>ZeroCoin(TM) is a prototype of Cryptocurrency.</legend>
+    <div><span> This node runs on: {{ request.host }} </span></div>
+    <div>
+        <span>Operations: </span>
+        <a href="/status" class="button"><button>Check Status</button></a>
+        <a href="/fullnode" class="button"><button>Get Full Node</button></a>
+        <a href="/mine" class="button"><button>Mine A Block</button></a>
+        <a href="/sync" class="button"><button>Sync With Network</button></a>
+    </div>
+    <div>
+        <form action="create_transaction" method="post">
+            <div style="display: flow-root">
+                <div>
+                    <label for="sender">Sender:</label>
+                    <input id="sender" name="sender" type="text"/>
+                </div>
+                <div>
+                    <label for="receiver">Receiver:</label>
+                    <input id="receiver" name="receiver" type="text"/>
+                </div>
+                <div>
+                    <label for="amount">Amount:</label>
+                    <input id="amount" name="amount" type="number"/>
+                </div>
+                <button type="submit">Create Transaction</button>
+            </div>
+        </form>
+    </div>
+
+    <div>
+        <form action="register_node" method="post">
+            <div style="display: flow-root">
+                <div>
+                    <label for="node">Node:</label>
+                    <input id="node" name="node" type="text"/>
+                </div>
+                <button type="submit">Add Node</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
