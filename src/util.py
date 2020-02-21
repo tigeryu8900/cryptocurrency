@@ -15,12 +15,15 @@ class JsonSerializable:
 
 class Hasher:
     @staticmethod
-    def object_hash(block_header):
+    def object_hash(obj):
         """
         Calculates the hash of a given object.
         """
-        obj_string = json.dumps(block_header.to_json(), sort_keys=True).encode()
-        return hashlib.sha256(obj_string).hexdigest()
+        if type(obj) == str:
+            return hashlib.sha256(obj.encode()).hexdigest()
+        else:
+            obj_string = json.dumps(obj.to_json(), sort_keys=True).encode()
+            return hashlib.sha256(obj_string).hexdigest()
 
     @staticmethod
     def hash(data: str):
