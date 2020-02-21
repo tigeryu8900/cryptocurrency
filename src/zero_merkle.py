@@ -30,7 +30,7 @@ class ZeroMerkleTree:
             layer = up_layer
 
         # return the root
-        if len(layer) > 0:
+        if len(layer) == 1:
             return layer[0]
         else:
             return MerkleNode(None, None, "")

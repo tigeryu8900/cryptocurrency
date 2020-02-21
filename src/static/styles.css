@@ -1,0 +1,34 @@
+html {
+    line-height: 1.15;
+    display: flow;
+}
+
+.main-box {
+    display: flow;
+}
+
+.operation-box {
+    display: flow-root;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.form-items {
+    display: flow-root;
+    margin-bottom: 20px;
+}
+
+.description {
+    font-size: 25px;
+    line-height: 1;
+    color: #a54216;
+    background: aquamarine;
+    margin-bottom: 20px;
+}
+
+.description-small{
+    font-size: 25px;
+    color: rgba(178, 178, 178);
+}
+
+

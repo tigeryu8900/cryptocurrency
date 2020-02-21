@@ -6,7 +6,7 @@ from src.util import JsonSerializable, Hasher
 
 
 class BlockHeader(JsonSerializable):
-    def __init__(self, height: int, previous_hash: str, transaction_root: str, difficulty: int=2, nonce: int=0):
+    def __init__(self, height: int, previous_hash: str, transaction_root: str, difficulty: int, nonce: int=0):
         self.height = height
         self.previous_hash = previous_hash
         self.transaction_root = transaction_root
@@ -16,11 +16,12 @@ class BlockHeader(JsonSerializable):
 
 class ZeroChain(object):
     def __init__(self):
-        self.new_transactions = []
-        self.block_headers = []
-        self.transactions = []
+        self.pending_transactions = []
+        self.block_headers = []  # a list of BlockHeader objects, one for each block
+        self.transactions = []  # a list of lists of transactions, one nested list for each block
         self.difficulty = 2  # pow difficulty level
         self.nodes = set()  # nodes in the network
+        self.node_ipport = ""  # the "ip:port" of this instance
 
         # Create the genesis block
         block_head = BlockHeader(0, "", "", self.difficulty)
@@ -36,19 +37,19 @@ class ZeroChain(object):
             block_header.nonce += 1
 
         self.block_headers.append(block_header)
-        self.transactions.append(self.new_transactions)
+        self.transactions.append(self.pending_transactions)
         # Clear new transaction list
-        self.new_transactions = []
+        self.pending_transactions = []
 
 
     def create_block(self):
         """
-        Creates a block and include all transactions in self.new_transactions.
+        Creates a block and include all transactions in self.pending_transactions.
         :returns the new created block_header
         """
 
         # create transaction merkle tree and get the root
-        transaction_tree = ZeroMerkleTree(self.new_transactions)
+        transaction_tree = ZeroMerkleTree(self.pending_transactions)
         transaction_root = transaction_tree.root_hash
         block_header = BlockHeader(height = self.block_height,
                                    previous_hash = Hasher.object_hash(self.latest_block),
@@ -74,27 +75,50 @@ class ZeroChain(object):
         :returns the created transaction
         """
 
-        print(sender, receiver, amount)
         txn = transaction.TransferTxn(sender, receiver, amount)
-        self.new_transactions.append(txn)
+        self.pending_transactions.append(txn)
         return txn
 
-    def sync(self):
+    # The following are network related functions.
+
+    def add_node(self, new_node: str, propagate: bool):
+        """ Adds a new node and propagate to all neighbors if necessary. """
+        # skip if the new_node is already added
+        if new_node in self.nodes:
+            return
+        # skip to add self as a neighbor
+        if new_node == self.node_ipport:
+            return
+        # add the new node to the node set
+        self.nodes.add(new_node)
+        if propagate:
+            # then, propagate the new node to all neighbors, set propagate = False to prevent recursive calls
+            nodes = [n for n in self.nodes]
+            for n in nodes:
+                for m in nodes:
+                    if not m == n:
+                        requests.post(f"http://{n}/register_node", data={"node": m, "propagate": False})
+            # finally, add myself to new_node's neighbor list
+            requests.post(f"http://{new_node}/register_node", data={"node": self.node_ipport, "propagate": True})
+
+
+    def sync_self(self):
         """
         Sync with other nodes in the network, replace current chain with
         the longest valid chain in the network
         :return: True if current chain is replaced otherwise False
         """
-        newchain = None
+
         longest_node = None
+        max_height = 0
         # find the longest node in the network
         for node in self.nodes:
             response = requests.get(f"http://{node}/status")
-
             if response.status_code == 200:
                 block_height = response.json()["block_height"]
-                if block_height > self.block_height:
+                if block_height > self.block_height and block_height > max_height:
                     longest_node = node
+                    max_height = block_height
 
         if longest_node is None:
             # this node is already the longest node
@@ -112,13 +136,30 @@ class ZeroChain(object):
                     block_height == len(block_headers) and \
                     len(block_headers) == len(transactions):
                 # replace current node
-                self.block_headers = [BlockHeader.from_json(b) for b in block_headers]
+                bhs = [BlockHeader.from_json(b) for b in block_headers]
                 # we may need to take care of other types of transactions later
-                self.transactions = [[transaction.TransferTxn.from_json(t) for t in tx] for tx in transactions]
+                txs = [[transaction.TransferTxn.from_json(t) for t in tx] for tx in transactions]
+                if not ZeroChain.verify_chain(bhs, txs):
+                    return False  # chain validation fail
+                self.block_headers = bhs
+                self.transactions = txs
                 return True
 
         # the longest node is not sound
         return False
+
+
+    def sync(self, propagate):
+        # sync this node with neighbors
+        replaced = self.sync_self()
+
+        # then, ask all neighbors to sync themselves if necessary
+        if propagate:
+            for node in self.nodes:
+                print(f"ask {node} to sync")
+                requests.get(f"http://{node}/sync?propagate=False")
+        # return if this node is replaced
+        return replaced
 
 
     @staticmethod
@@ -129,8 +170,12 @@ class ZeroChain(object):
         :param transactions: list of transactions of each block
         :return: True if the given chain is valid
         """
-        if len(block_headers) != len(transactions) or len(block_headers) < 1:
+        if len(block_headers) != len(transactions) and len(block_headers) == 0:
             return False
+
+        # an valid chain contains only the genesis block
+        if len(block_headers) == 1:
+            return True
 
         # validate the all the rest of blocks
         for i in range(len(block_headers)):

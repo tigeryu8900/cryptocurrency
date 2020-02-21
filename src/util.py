@@ -19,7 +19,7 @@ class Hasher:
         """
         Calculates the hash of a given object.
         """
-        obj_string = json.dumps(block_header.__dict__, sort_keys=True).encode()
+        obj_string = json.dumps(block_header.to_json(), sort_keys=True).encode()
         return hashlib.sha256(obj_string).hexdigest()
 
     @staticmethod

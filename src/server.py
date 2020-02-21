@@ -42,19 +42,12 @@ def create_transaction():
     return jsonify(txn.to_json()), 200
 
 
-@app.route("/register_node", methods=["POST"])
-def register_node():
-    node = request.form["node"]
-    txn = zeroChain.nodes.add(node)
-    return "Node added: " + node
-
-
 @app.route("/status", methods=["GET"])
 def status():
     response = {
         "block_height": zeroChain.block_height,
         "block_headers": [h.to_json() for h in zeroChain.block_headers],
-        "pending_transactions": [t.to_json() for t in zeroChain.new_transactions],
+        "pending_transactions": [t.to_json() for t in zeroChain.pending_transactions],
         "nodes": [n for n in zeroChain.nodes],
     }
     return jsonify(response), 200
@@ -71,11 +64,23 @@ def fullnode():
     return jsonify(response), 200
 
 
+# the following are network related functions.
+
+@app.route("/register_node", methods=["POST"])
+def register_node():
+    node = request.form["node"]
+    propagate = bool(request.form["propagate"])
+    zeroChain.add_node(node, propagate)
+    return "Node added: " + node
+
+
 @app.route("/sync", methods=["GET"])
 def sync():
-    if zeroChain.sync():
+    propagate = request.args.get('propagate')
+
+    if zeroChain.sync(propagate == "True"):
         return "This node has been replaced!"
-    else :
+    else:
         return "This node is already the longest one in the network."
 
 
@@ -86,15 +91,17 @@ def main(argv):
         print("server.py -p <port_number>")
         sys.exit(2)
 
-    p = 8900  # default port number 8900
+    port = 8900  # default port number 8900
     for opt, arg in opts:
         if opt == "-h":
             print("server.py -p <port_number>")
             sys.exit()
         elif opt in ("-p", "--port"):
-            p = int(arg)
-    # start the application
-    app.run(host="127.0.0.1", port=p)
+            port = int(arg)
+    host="127.0.0.1"
+    zeroChain.node_ipport = f"{host}:{port}"
+    # start the web server
+    app.run(host="127.0.0.1", port=port)
 
 
 if __name__ == "__main__":

@@ -2,21 +2,22 @@
 <html>
 <head>
     <link rel="icon" href="/src/static/favicon.ico">
+    <link href="/static/styles.css" rel="stylesheet" />
 </head>
 <body>
-<div style="display: flow">
-    <legend>ZeroCoin(TM) is a prototype of Cryptocurrency.</legend>
-    <div><span> This node runs on: {{ request.host }} </span></div>
-    <div>
+<div class="main-box">
+    <legend class="description">ZeroCoin(TM) is a prototype of Cryptocurrency.</legend>
+    <div class="description-small"><span> This node runs on: {{ request.host }} </span></div>
+    <div class="operation-box">
         <span>Operations: </span>
         <a href="/status" class="button"><button>Check Status</button></a>
         <a href="/fullnode" class="button"><button>Get Full Node</button></a>
         <a href="/mine" class="button"><button>Mine A Block</button></a>
-        <a href="/sync" class="button"><button>Sync With Network</button></a>
+        <a href="/sync?propagate=True" class="button"><button>Sync With Network</button></a>
     </div>
     <div>
         <form action="create_transaction" method="post">
-            <div style="display: flow-root">
+            <div class="form-items">
                 <div>
                     <label for="sender">Sender:</label>
                     <input id="sender" name="sender" type="text"/>
@@ -36,10 +37,11 @@
 
     <div>
         <form action="register_node" method="post">
-            <div style="display: flow-root">
+            <div class="form-items">
                 <div>
                     <label for="node">Node:</label>
                     <input id="node" name="node" type="text"/>
+                    <input id="propagate" name="propagate" type="hidden" value="True"/>
                 </div>
                 <button type="submit">Add Node</button>
             </div>
