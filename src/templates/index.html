@@ -1,52 +1,117 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
+    <title>transaction</title>
+    <link href="/static/css/style.css" rel='stylesheet' type='text/css'/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="icon" href="/src/static/favicon.ico">
-    <link href="/static/styles.css" rel="stylesheet" />
+    <link href="/static/styles.css" rel="stylesheet"/>
+    <style type="text/css">
+        button {
+  position: relative;
+  background: #e7e7e7;
+  border: none;
+  color: black;
+  padding: 15px 24px;
+  font-size: 1.4rem;
+  outline: none;
+  margin-bottom: 35px;
+  box-shadow: -6px 6px 0 hsl(16, 100%, 30%);
+}
+
+    </style>
 </head>
 <body>
-<div class="main-box">
-    <legend class="description">ZeroCoin(TM) is a prototype of Cryptocurrency.</legend>
-    <div class="description-small"><span> This node runs on: {{ request.host }} </span></div>
-    <div class="operation-box">
-        <span>Operations: </span>
-        <a href="/status" class="button"><button>Check Status</button></a>
-        <a href="/fullnode" class="button"><button>Get Full Node</button></a>
-        <a href="/mine" class="button"><button>Mine A Block</button></a>
-        <a href="/sync?propagate=True" class="button"><button>Sync With Network</button></a>
-    </div>
-    <div>
-        <form action="create_transaction" method="post">
-            <div class="form-items">
-                <div>
-                    <label for="sender">Sender:</label>
-                    <input id="sender" name="sender" type="text"/>
+<h1>transaction</h1>
+<div class="message warning">
+    <div class="inset agile">
+        <div class="sap_tabs w3ls-tabs" width="60%" style="height: 454px">
+            <div id="horizontalTab" style="display: block; width: 100%; margin: 0px;">
+                <ul class="resp-tabs-list">
+                    <li class="resp-tab-item" aria-controls="tab_item-0" role="tab">
+                        This node runs on: {{ request.host }}
+                    </li>
+                </ul>
+                <div class="clear"></div>
+                <div class="alert-close"></div>
+                <div class="resp-tabs-container">
+                    <div class="tab-1 resp-tab-content" aria-labelledby="tab_item-1">
+                        <div class="login-agileits-top sign-up">
+                            <form action="create_transaction" method="post">
+                                <p><label for="sender">Sender:</label></p>
+                                <input id="sender" name="sender" type="text"/>
+                                <p><label for="receiver">Receiver:</label></p>
+                                <input id="receiver" name="receiver" type="text"/>
+                                <p><label for="amount">Amount:</label></p>
+                                <input id="amount" name="amount" type="number"/>
+                                <input type="submit" value="Create Transaction">
+                            </form>
+                            <form action="register_node" method="post">
+                                <div class="form-items">
+                                    <label for="node">Node:</label>
+                                    <input id="node" name="node" type="text"/>
+                                    <input id="propagate" name="propagate" type="hidden" value="True"/>
+                                    <input type="submit" value="Add Node">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="receiver">Receiver:</label>
-                    <input id="receiver" name="receiver" type="text"/>
-                </div>
-                <div>
-                    <label for="amount">Amount:</label>
-                    <input id="amount" name="amount" type="number"/>
-                </div>
-                <button type="submit">Create Transaction</button>
             </div>
-        </form>
+        </div>
+        <div class="right-section-w3ls" style="width: 35%;height: 510px">
+            <p style="font-size: larger;margin-bottom: 30px">
+                Operations:
+            </p>
+            <div>
+                <a href="/status">
+                    <button>Check Status</button>
+                </a>
+                <a href="/fullnode">
+                    <button>Get Full Node</button>
+                </a>
+                <a href="/mine">
+                    <button >Mine A Block</button>
+                </a>
+                <a href="/sync?propagate=True" >
+                    <button >Sync With Network</button>
+                </a>
+            </div>
+
+{#            <div class="clear"></div>#}
+
+        </div>
     </div>
 
-    <div>
-        <form action="register_node" method="post">
-            <div class="form-items">
-                <div>
-                    <label for="node">Node:</label>
-                    <input id="node" name="node" type="text"/>
-                    <input id="propagate" name="propagate" type="hidden" value="True"/>
-                </div>
-                <button type="submit">Add Node</button>
-            </div>
-        </form>
+    <div class="clear"></div>
+    <div class="copy-right w3l-agile">
+        <p style="font-size: large">
+           ZeroCoin(TM) is a prototype of Cryptocurrency.
+        </p>
     </div>
 </div>
+<script type="text/javascript" src="/static/js/jquery-2.1.4.min.js"></script>
+<script>
+    $(document).ready(function (c) {
+        $('.alert-close').on('click', function (c) {
+            $('.message').fadeOut('slow', function (c) {
+                $('.message').remove();
+            });
+        });
+    });
+</script>
+<script src="/static/js/easyResponsiveTabs.js" type="text/javascript"></script>
+<!-- ResponsiveTabs js -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#horizontalTab').easyResponsiveTabs({
+            type: 'default',
+            width: 'auto',
+            fit: true
+        });
+    });
+</script>
+
 </body>
 </html>
