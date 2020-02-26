@@ -6,6 +6,7 @@ import statistics
 import time
 import gc
 from src.zero_merkle import ZeroMerkleTree, BitcoinMerkleTree, LibraMerkleTree
+from memory_profiler import profile
 
 
 def generate_data(data_size: int, data_count: int):
@@ -21,7 +22,7 @@ def generate_data(data_size: int, data_count: int):
                                string.digits, k = data_size)))
     return res
 
-
+@profile
 def test_algorithm(data: list, round: int, algorithm):
     """ perform a round of performance test for the given algorithm """
     numbers = []
