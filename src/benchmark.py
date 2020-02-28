@@ -27,7 +27,7 @@ def generate_data(data_size: int, data_count: int):
 def speed_test_repeat(algorithms, data_count, round):
     setup_stm = f"""\
 from __main__ import generate_data, BitcoinMerkleTree, LibraMerkleTree, ZeroMerkleTree
-from __main__ import generate_data, BitcoinMerkleTree2, LibraMerkleTree2, ZeroMerkleTree2
+from __main__ import generate_data, BitcoinMerkleTreeLite, LibraMerkleTreeLite, ZeroMerkleTreeLite
 data = generate_data(15, {data_count})
     """
 
@@ -39,7 +39,7 @@ data = generate_data(15, {data_count})
 def speed_test_random(algorithms, data_count, repeat, round):
     setup_stm = f"""\
 from __main__ import generate_data, BitcoinMerkleTree, LibraMerkleTree, ZeroMerkleTree
-from __main__ import generate_data, BitcoinMerkleTree2, LibraMerkleTree2, ZeroMerkleTree2
+from __main__ import generate_data, BitcoinMerkleTreeLite, LibraMerkleTreeLite, ZeroMerkleTreeLite
 data = generate_data(15, {data_count})
     """
 
